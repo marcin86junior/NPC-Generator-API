@@ -15,9 +15,14 @@ story-driven non-player characters (NPCs) from narrative prompts.
 ---
 
 ## 🐳 Run via Docker
-1. Copy the `.env.template` file to `.env` in main folder and add GEMINI_API_KEY
-2. docker-compose up -d --build
-3. docker-compose up
+1. mkdir NPC_Generator_API
+2. cd NPC_Generator_API
+3. git clone https://github.com/marcin86junior/NPC-Generator-API .
+4. Copy the `.env.template` file to `.env` in main folder and add GEMINI_API_KEY
+5. docker-compose up -d --build
+6. docker-compose up
+
+---
 
 ## 🛠️ Local installation
 
@@ -101,7 +106,7 @@ python manage.py test
 
 ---
 
-## How to use the API?
+## How to test the API with Swagger UI?
 - go to: http://127.0.0.1:8000/swagger/
 
 1. Add story (POST /stories/) from fantasy.md or your own story

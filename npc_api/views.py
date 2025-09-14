@@ -36,10 +36,10 @@ class StoryAskQuestionView(APIView):
             type=openapi.TYPE_OBJECT,
             required=['question'],
             properties={
-                'question': openapi.Schema(type=openapi.TYPE_STRING, description='Pytanie do historii')
+                'question': openapi.Schema(type=openapi.TYPE_STRING, description='Question about the story')
             }
         ),
-        responses={200: openapi.Response('Odpowiedź na pytanie', schema=openapi.Schema(
+        responses={200: openapi.Response('Answer to the question', schema=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
                 'answer': openapi.Schema(type=openapi.TYPE_STRING)
@@ -50,7 +50,7 @@ class StoryAskQuestionView(APIView):
         try:
             story = Story.objects.get(id=story_id)
         except Story.DoesNotExist:
-            return Response({"error": "Historia nie istnieje"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Story does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = StoryQuestionSerializer(data=request.data)
 
@@ -257,8 +257,7 @@ def quick_add_fantasy(request):
         return redirect('world')
     except Exception as e:
         from django.http import HttpResponse
-        return HttpResponse(f"Wystąpił błąd podczas dodawania historii: {str(e)}")
-
+        return HttpResponse(f"An error occurred while adding the story: {str(e)}")
 
 def about_page(request):
     return render(request, 'npc_api/about.html')
