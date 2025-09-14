@@ -7,10 +7,12 @@ from .serializers import (
     StorySerializer,
     CharacterSerializer,
     StoryQuestionSerializer,
-    CharacterRequestSerializer
+    CharacterRequestSerializer,
+    CharacterTalkSerializer
 )
 from .services.story_understanding import StoryUnderstanding
 from .services.character_generator import CharacterGenerator
+from .services.character_conversation import CharacterConversation
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -136,5 +138,54 @@ class GenerateCharacterNameView(views.APIView):
             name = character_generator.generate_character_name(character_request)
 
             return Response({'name': name})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CharacterTalkView(APIView):
+    @swagger_auto_schema(
+        operation_description="Wysyła wiadomość do postaci i generuje odpowiedź zgodnie z jej osobowością",
+        request_body=CharacterTalkSerializer,
+        responses={
+            200: openapi.Response('Odpowiedź postaci', schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'response': openapi.Schema(type=openapi.TYPE_STRING, description='Odpowiedź postaci')
+                }
+            )),
+            400: 'Nieprawidłowe dane wejściowe',
+            404: 'Postać nie znaleziona',
+            500: 'Błąd generowania odpowiedzi'
+        }
+    )
+    def post(self, request, character_id):
+        try:
+            # Pobierz postać na podstawie ID
+            character = Character.objects.get(pk=character_id)
+        except Character.DoesNotExist:
+            return Response(
+                {"error": "Postać o podanym ID nie istnieje"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = CharacterTalkSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Pobierz wiadomość od użytkownika
+            message = serializer.validated_data['message']
+
+            try:
+                # Inicjalizuj serwis konwersacji
+                conversation_service = CharacterConversation(character=character)
+
+                # Wygeneruj odpowiedź
+                response = conversation_service.generate_response(message)
+
+                return Response({'response': response})
+            except Exception as e:
+                return Response(
+                    {"error": f"Wystąpił błąd: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -21,3 +21,10 @@ class StoryQuestionSerializer(serializers.Serializer):
 
 class CharacterRequestSerializer(serializers.Serializer):
     request = serializers.CharField(max_length=500)
+
+
+class CharacterTalkSerializer(serializers.Serializer):
+    message = serializers.CharField(
+        required=True,
+        help_text="Wiadomość do postaci"
+    )
