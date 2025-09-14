@@ -16,15 +16,15 @@ class CharacterSerializer(serializers.ModelSerializer):
 
 
 class StoryQuestionSerializer(serializers.Serializer):
-    question = serializers.CharField(max_length=1000)
+    question = serializers.CharField(max_length=300)
 
 
 class CharacterRequestSerializer(serializers.Serializer):
-    request = serializers.CharField(max_length=500)
+    request = serializers.CharField(max_length=300)
 
 
 class CharacterTalkSerializer(serializers.Serializer):
     message = serializers.CharField(
         required=True,
-        help_text="Wiadomość do postaci"
+        help_text="Message to the character"
     )

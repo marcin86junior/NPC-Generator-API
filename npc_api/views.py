@@ -144,47 +144,47 @@ class GenerateCharacterNameView(views.APIView):
 
 class CharacterTalkView(APIView):
     @swagger_auto_schema(
-        operation_description="Wysyła wiadomość do postaci i generuje odpowiedź zgodnie z jej osobowością",
+        operation_description="Sends a message to the character and generates a response according to their personality",
         request_body=CharacterTalkSerializer,
         responses={
-            200: openapi.Response('Odpowiedź postaci', schema=openapi.Schema(
+            200: openapi.Response('Character response', schema=openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'response': openapi.Schema(type=openapi.TYPE_STRING, description='Odpowiedź postaci')
+                    'response': openapi.Schema(type=openapi.TYPE_STRING, description='Character response')
                 }
             )),
-            400: 'Nieprawidłowe dane wejściowe',
-            404: 'Postać nie znaleziona',
-            500: 'Błąd generowania odpowiedzi'
+            400: 'Invalid input data',
+            404: 'Character not found',
+            500: 'Response generation error'
         }
     )
     def post(self, request, character_id):
         try:
-            # Pobierz postać na podstawie ID
+            # Retrieve character by ID
             character = Character.objects.get(pk=character_id)
         except Character.DoesNotExist:
             return Response(
-                {"error": "Postać o podanym ID nie istnieje"},
+                {"error": "Character with the given ID does not exist"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
         serializer = CharacterTalkSerializer(data=request.data)
 
         if serializer.is_valid():
-            # Pobierz wiadomość od użytkownika
+            # Get message from user
             message = serializer.validated_data['message']
 
             try:
-                # Inicjalizuj serwis konwersacji
+                # Initialize the conversation service
                 conversation_service = CharacterConversation(character=character)
 
-                # Wygeneruj odpowiedź
+                # Generate response
                 response = conversation_service.generate_response(message)
 
                 return Response({'response': response})
             except Exception as e:
                 return Response(
-                    {"error": f"Wystąpił błąd: {str(e)}"},
+                    {"error": f"An error occurred: {str(e)}"},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
         else:

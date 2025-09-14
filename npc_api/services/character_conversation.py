@@ -1,16 +1,15 @@
 import os
 import google.generativeai as genai
-from django.conf import settings
 
 
 class CharacterConversation:
     def __init__(self, character=None, api_key=None):
         """
-        Inicjalizacja serwisu do konwersacji z postacią.
+        Initialization of the character conversation service.
 
         Args:
-            character: Obiekt postaci z modelu Character
-            api_key: Opcjonalny klucz API do Gemini
+            character: Character object from the Character model
+            api_key: Optional Gemini API key
         """
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         genai.configure(api_key=self.api_key)
@@ -18,13 +17,13 @@ class CharacterConversation:
         self.character = character
         self.model = "gemini-2.0-flash-lite"
 
-        # Przygotowanie opisu postaci
+        # Prepare character description
         if character:
             self.character_description = self._prepare_character_description()
 
     def _prepare_character_description(self):
         """
-        Przygotowuje opis postaci na podstawie jej atrybutów.
+        Prepares a character description based on its attributes.
         """
         personality = (
             self.character.personality_traits
@@ -42,10 +41,10 @@ class CharacterConversation:
 
     def _is_good_personality(self):
         """
-        Sprawdza, czy postać ma dobrą osobowość.
+        Checks if the character has a good personality.
 
         Returns:
-            bool: True jeśli postać ma dobrą osobowość, False w przeciwnym przypadku
+        bool: True if the character has a good personality, False otherwise
         """
         good_traits = ['good', 'kind', 'helpful', 'honest', 'fair', 'noble']
         bad_traits = ['evil', 'bad', 'cruel', 'selfish', 'cunning', 'ruthless']
@@ -59,32 +58,32 @@ class CharacterConversation:
 
     def generate_response(self, message):
         """
-        Generuje odpowiedź postaci na wiadomość użytkownika.
+        Generates a character's response to the user's message.
 
         Args:
-            message: Wiadomość od użytkownika
+            message: Message from the user
 
         Returns:
-            str: Wygenerowana odpowiedź postaci
+            str: Generated character response
         """
         try:
             is_good = self._is_good_personality()
-            personality_type = "dobra, pomocna i przyjazna" if is_good else "złośliwa, samolubna i podejrzliwa"
+            personality_type = "good, helpful, and friendly" if is_good else "malicious, selfish, and suspicious"
 
             prompt = f"""
-            Wciel się w postać o poniższych cechach:
-            - Imię: {self.character.name}
-            - Frakcja: {self.character.faction}
-            - Profesja: {self.character.profession}
-            - Osobowość: {self.character.personality_traits}
-            - Historia: {self.character.background}
+            Assume the role of a character with the following traits:
+            - Name: {self.character.name}
+            - Faction: {self.character.faction}
+            - Profession: {self.character.profession}
+            - Personality: {self.character.personality_traits}
+            - Background: {self.character.background}
 
-            Twoja postać ma {personality_type} osobowość.
+            Your character has a {personality_type} personality.
 
-            Użytkownik napisał do ciebie: "{message}"
+            The user wrote to you: "{message}"
 
-            Odpowiedz jako ta postać, zachowując jej unikalny charakter i sposób wypowiedzi.
-            Odpowiedź powinna być krótka (2-3 zdania) i w pełni odzwierciedlać osobowość postaci.
+            Respond as this character, maintaining their unique character and manner of speaking.
+            The response should be short (2-3 sentences) and fully reflect the character's personality.
             """
 
             model = genai.GenerativeModel(self.model)
@@ -92,4 +91,4 @@ class CharacterConversation:
 
             return response.text
         except Exception as e:
-            return f"Błąd podczas generowania odpowiedzi: {str(e)}"
+            return f"Error while generating response: {str(e)}"
