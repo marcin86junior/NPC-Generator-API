@@ -3,6 +3,11 @@
 **NPC Generator API** an app powered by Gemini AI that creates and manages rich,
 story-driven non-player characters (NPCs) from narrative prompts.
 
+<p align="center">
+  <img src="picture.png" alt="Interfejs promptera do rozmowy z NPC" width="600">
+  <br>
+</p>
+
 ---
 
 ## 📋 Main Requirements
@@ -209,6 +214,8 @@ answer:
 }
 ```
 
+---
+
 ### Conversation with NPC by prompter: 
 - http://127.0.0.1:8000/conversations/1/history/
 - you can change character id in url
@@ -219,6 +226,8 @@ answer:
   <em>Prompter interface for conversation with game characters</em>
 </p>
 
+---
+
 ### TODO
 1. Add conversations model to db OK
 2. Save conversation history of me and person I'm talking to OK
@@ -226,6 +235,8 @@ answer:
 4. Use conversation history in CharacterConversation (last 10 messages) TODO
 5. Move conversations/1/history/ to npc_api/urls.py TODO
 6. Add tests for new endpoints TODO
+
+---
 
 ### My notes
 1. Gemini AI sometimes returns "Model is overloaded" error.
