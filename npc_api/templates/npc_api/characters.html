@@ -1,81 +1,95 @@
 {% extends 'npc_api/base.html' %}
 
+{% block title %}Generator Postaci{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2>Generate New Character</h2>
-    <p class="lead">Create a new NPC character for your fantasy world</p>
+    <h2>NPC Character Generator</h2>
+    <p class="lead">Create a new NPC character for your fantasy world. Please wait 10-20 seconds to generate.</p>
 
-    <div class="card">
-        <div class="card-body">
-            <form id="generateCharacterForm">
-                <div class="mb-3">
-                    <label for="storyId" class="form-label">Story ID</label>
-                    <input type="text" class="form-control" id="storyId" required>
-                    <div class="form-text">Enter the ID of the world where this character exists</div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="characterRequest" class="form-label">Character Description</label>
-                    <textarea class="form-control" id="characterRequest" rows="4" maxlength="300" required></textarea>
-                    <div class="form-text">Describe the character you want to generate (max 300 characters)</div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Generate Character</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="mt-4" id="result" style="display: none;">
-        <div class="card">
-            <div class="card-header">Generated Character</div>
-            <div class="card-body">
-                <div id="characterData"></div>
+    <div class="card p-4 shadow-sm mb-4">
+        <form id="character-form">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="request" class="form-label">Character description:</label>
+                <textarea class="form-control" id="request" name="request" rows="4"
+                    placeholder="Describe the character you want to generate..." required></textarea>
             </div>
+            <div class="mb-3">
+                <label for="story-id" class="form-label">ID Story:</label>
+                <input type="number" class="form-control" id="story-id" name="story-id" value="1" min="1">
+            </div>
+        <button type="submit" class="btn btn-primary">Generate character</button>
+        </form>
+    </div>
+
+    <div id="result" class="card mb-4" style="display: none;">
+        <div class="card-header">
+            <h3 id="character-name">Nazwa Postaci</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Frakcja:</strong> <span id="character-faction"></span></p>
+            <p><strong>Profesja:</strong> <span id="character-profession"></span></p>
+            <p><strong>Cechy osobowości:</strong> <span id="character-personality"></span></p>
+            <p><strong>Historia:</strong> <span id="character-background"></span></p>
+            <p class="text-muted"><small>ID: <span id="character-id"></span></small></p>
         </div>
     </div>
+
+    <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 </div>
 
 <script>
-document.getElementById('generateCharacterForm').addEventListener('submit', function(e) {
+document.getElementById('character-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const storyId = document.getElementById('storyId').value;
-    const request = document.getElementById('characterRequest').value;
+    // Ukryj poprzednie wyniki i błędy
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('error-message').style.display = 'none';
 
-    fetch(`/characters/${storyId}/generate-character/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            request: request
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('characterData').innerHTML = JSON.stringify(data, null, 2);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while generating the character.');
-    });
-});
+    // Pobierz dane z formularza
+    const storyId = document.getElementById('story-id').value;
+    const requestText = document.getElementById('request').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+    try {
+        const response = await fetch(`/api/characters/${storyId}/generate-character/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                request: requestText
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Wypełnij dane postaci
+            document.getElementById('character-name').textContent = data.name;
+            document.getElementById('character-faction').textContent = data.faction;
+            document.getElementById('character-profession').textContent = data.profession;
+            document.getElementById('character-personality').textContent =
+                Array.isArray(data.personality_traits) ? data.personality_traits.join(', ') : data.personality_traits;
+            document.getElementById('character-background').textContent = data.background;
+            document.getElementById('character-id').textContent = data.id;
+
+            // Pokaż wyniki
+            document.getElementById('result').style.display = 'block';
+        } else {
+            const errorText = await response.text();
+            document.getElementById('error-message').textContent =
+                `Błąd ${response.status}: ${errorText}`;
+            document.getElementById('error-message').style.display = 'block';
         }
+    } catch (error) {
+        document.getElementById('error-message').textContent =
+            `Błąd komunikacji z serwerem: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
     }
-    return cookieValue;
-}
+});
 </script>
 {% endblock %}
