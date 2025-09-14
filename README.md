@@ -105,9 +105,7 @@ python manage.py test
 ---
 
 ## How to use the API?
-- go to swagger: http://127.0.0.1:8000/swagger/
-
-### Task
+- go to: http://127.0.0.1:8000/swagger/
 
 1. Add story (POST /stories/) from fantasy.md or your own story
 - title: The Chronicles of the Sundered Realm
