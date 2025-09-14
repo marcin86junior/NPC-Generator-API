@@ -27,5 +27,6 @@ urlpatterns = [
     path('characters/', views.characters_page, name='characters'),
     path('conversation/', views.conversation_page, name='conversation'),
     path('conversations/<int:character_id>/history/', views.ConversationHistoryTemplateView.as_view(), name='conversation-history-html'),
+    path('quick-add-fantasy/', views.quick_add_fantasy, name='quick-add-fantasy'),
     path('about/', views.about_page, name='about'),
 ]

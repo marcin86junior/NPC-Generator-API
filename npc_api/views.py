@@ -245,6 +245,21 @@ def conversation_page(request):
     characters = Character.objects.all()
     return render(request, 'npc_api/conversation.html', {'characters': characters})
 
+def quick_add_fantasy(request):
+    try:
+        with open('data/fantasy.md', 'r', encoding='utf-8') as file:
+            fantasy_content = file.read()
+        story = Story.objects.create(
+            title="Fantasy World",
+            content=fantasy_content
+        )
+        from django.shortcuts import redirect
+        return redirect('world')
+    except Exception as e:
+        from django.http import HttpResponse
+        return HttpResponse(f"Wystąpił błąd podczas dodawania historii: {str(e)}")
+
+
 def about_page(request):
     return render(request, 'npc_api/about.html')
 
