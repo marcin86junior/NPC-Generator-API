@@ -21,7 +21,7 @@ story-driven non-player characters (NPCs) from narrative prompts.
 ```bash
 mkdir NPC_Generator_API
 cd NPC_Generator_API
-git clone https://github.com/marcin86junior/?.git .
+git clone https://github.com/marcin86junior/NPC-Generator-API .
 cd NPC_Generator_API
 python -m venv .venv
 ```
