@@ -28,7 +28,17 @@
             <div class="card-body">
                 <p><strong>Faction:</strong> {{ character.faction }}</p>
                 <p><strong>Profession:</strong> {{ character.profession }}</p>
-                <p><strong>Personality:</strong> {{ character.personality }}</p>
+                <p><strong>Personality:</strong>
+                    {% if character.personality_traits|length > 0 %}
+                        {% if character.personality_traits.items %}
+                            {% for key, value in character.personality_traits.items %}{% if not forloop.first %}, {% endif %}{{ key }}: {{ value }}{% endfor %}
+                        {% else %}
+                            {{ character.personality_traits|join:", " }}
+                        {% endif %}
+                    {% else %}
+                        No personality data available
+                    {% endif %}
+                </p>
                 <p><strong>Background:</strong> {{ character.background|truncatewords:50 }}</p>
             </div>
         </div>

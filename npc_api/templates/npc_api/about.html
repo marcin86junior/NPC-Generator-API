@@ -4,13 +4,67 @@
 
 {% block content %}
 <div class="container">
-    <h1>About the Project</h1>
-    <p>This page contains information about our NPC generator.</p>
+    <h1 class="my-4">About the Project</h1>
+    <p class="lead">This page contains information about our NPC generator.</p>
+
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 mb-4">
             <h2>How it works</h2>
-            <p>...</p>
+            <p>NPC Generator API is an innovative tool based on Gemini artificial intelligence, created to generate and manage rich, complex non-player characters (NPCs) based on provided narratives and world histories.</p>
+
+            <h3 class="mt-4">Main Features</h3>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item"><strong>World Creation</strong> - adding extensive histories that form the foundation for characters</li>
+                <li class="list-group-item"><strong>Character Generation</strong> - creating NPCs with unique personality traits, faction affiliations, and backstories</li>
+                <li class="list-group-item"><strong>Interactive Conversations</strong> - ability to conduct dialogues with generated characters</li>
+                <li class="list-group-item"><strong>Context Memory</strong> - a system that remembers conversation history with characters</li>
+            </ul>
+
+            <h3>How It Works</h3>
+            <ol>
+                <li>The application uses the powerful Gemini AI model to analyze provided world histories</li>
+                <li>Based on the world context, coherent characters with unique personalities are generated</li>
+                <li>Each character responds individually to user questions and requests, according to their personality and background</li>
+                <li>Conversation history is saved, allowing for building long-term relationships with characters</li>
+            </ol>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light mb-4">
+                <div class="card-header">Technologies</div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle-fill text-success"></i> Backend: Django 5.2 with Django REST Framework</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> AI Engine: Google Gemini</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> Containerization: Docker</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> User Interface: HTML/CSS/JavaScript</li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Contact Information</h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    If you're interested in this application, please contact us via email or website:
+                </p>
+                <div class="ps-4 mt-4">
+                    <p>
+                        <a href="https://marcin86.pythonanywhere.com/" target="_blank">https://marcin86.pythonanywhere.com/</a>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+</div>
+
 {% endblock %}
