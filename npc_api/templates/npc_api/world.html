@@ -11,7 +11,10 @@
             <div class="card">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <h3 class="mb-0">{{ story.name }}</h3>
-                    <span class="badge bg-secondary">ID: {{ story.id }}</span>
+                    <div>
+                        <span class="badge bg-secondary me-2">ID: {{ story.id }}</span>
+                        <span class="badge bg-secondary delete-story" data-story-id="{{ story.id }}" style="cursor: pointer;">X</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -25,7 +28,7 @@
                             <div class="card bg-light">
                                 <div class="card-header">Ask about this world</div>
                                 <div class="card-body">
-                                    <form method="post" action="{% url 'ask-question' story.id %}">
+                                    <form id="question-form-{{ story.id }}" class="question-form" data-story-id="{{ story.id }}">
                                         {% csrf_token %}
                                         <div class="mb-3">
                                             <textarea name="question" class="form-control" rows="3" placeholder="What would you like to know about this world?" required></textarea>
@@ -36,19 +39,17 @@
                             </div>
                         </div>
                     </div>
-                    
-<!--                    {% if story.id == active_story_id %}-->
-<!--                    <div class="mt-4">-->
-<!--                        <div class="card border-info">-->
-<!--                            <div class="card-header bg-info text-white">Response to your question</div>-->
-<!--                            <div class="card-body">-->
-<!--                                <p><strong>Question:</strong> {{ question }}</p>-->
-<!--                                <hr>-->
-<!--                                <p><strong>Answer:</strong> {{ answer }}</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    {% endif %}-->
+
+                    <div class="mt-4 response-container" id="response-{{ story.id }}" style="display: none;">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">Response to your question</div>
+                            <div class="card-body">
+                                <p><strong>Question:</strong> <span class="asked-question"></span></p>
+                                <hr>
+                                <p><strong>Answer:</strong> <span class="received-answer"></span></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -62,4 +63,80 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Obsługa formularzy pytań
+    const forms = document.querySelectorAll('.question-form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const storyId = this.getAttribute('data-story-id');
+            const questionText = this.querySelector('textarea[name="question"]').value;
+            const csrfToken = this.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            const responseContainer = document.getElementById(`response-${storyId}`);
+
+            // Wyświetlenie pytania w kontenerze odpowiedzi
+            responseContainer.querySelector('.asked-question').textContent = questionText;
+
+            // Pokazanie ładowania
+            const answerSpan = responseContainer.querySelector('.received-answer');
+            answerSpan.textContent = "Ładowanie odpowiedzi...";
+            responseContainer.style.display = 'block';
+
+            // Wysłanie zapytania AJAX
+            fetch(`/api/stories/${storyId}/ask-question/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ question: questionText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                answerSpan.textContent = data.answer;
+            })
+            .catch(error => {
+                answerSpan.textContent = "Wystąpił błąd podczas przetwarzania zapytania.";
+                console.error('Error:', error);
+            });
+        });
+    });
+
+    // Obsługa przycisków usuwania
+    const deleteButtons = document.querySelectorAll('.delete-story');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const storyId = this.getAttribute('data-story-id');
+            if (confirm('Czy na pewno chcesz usunąć tę historię?')) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                fetch(`/api/stories/${storyId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Usuń element z DOM po pomyślnym usunięciu
+                        const storyElement = this.closest('.col-md-12');
+                        storyElement.remove();
+                    } else {
+                        alert('Wystąpił błąd podczas usuwania historii.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Wystąpił błąd podczas usuwania historii.');
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

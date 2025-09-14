@@ -14,6 +14,11 @@ story-driven non-player characters (NPCs) from narrative prompts.
 
 ---
 
+## 🐳 Run via Docker
+1. Copy the `.env.template` file to `.env` in main folder and add GEMINI_API_KEY
+2. docker-compose up -d --build
+3. docker-compose up
+
 ## 🛠️ Local installation
 
 ### 1. Prepare the environment
@@ -86,14 +91,6 @@ Go to `npc_api/tests` and fill the `GEMINI_API_KEY` in `test_settings.py`
 ```bash
 python manage.py test
 ```
-
----
-
-## 🐳 Run via Docker
-1. Copy the `.env.template` file to `.env` in main folder and add GEMINI_API_KEY
-2. docker-compose up -d --build
-3. docker-compose up
-
 
 ---
 
@@ -222,8 +219,7 @@ answer:
 2. Save conversation history of me and person I'm talking to OK
 3. Create prompter to talk with characters OK
 4. Use conversation history in CharacterConversation (last 10 messages) TODO
-5. Translate prompter from Polish to English TODO
-6. Move conversations/1/history/ to npc_api/urls.py TODO
+5. Move conversations/1/history/ to npc_api/urls.py TODO
 6. Add tests for new endpoints TODO
 
 ### My notes
