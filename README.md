@@ -222,7 +222,8 @@ answer:
 2. Save conversation history of me and person I'm talking to OK
 3. Create prompter to talk with characters OK
 4. Use conversation history in CharacterConversation (last 10 messages) TODO
-5. Add tests for new endpoints TODO
+5. Move conversations/1/history/ to npc_api/urls.py TODO
+6. Add tests for new endpoints TODO
 
 ### My notes
 1. Gemini AI sometimes returns "Model is overloaded" error.
