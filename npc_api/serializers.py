@@ -43,4 +43,4 @@ class ConversationHistorySerializer(serializers.ModelSerializer):
         return obj.character.name if obj.character else None
 
     def get_sender(self, obj):
-        return "Postać" if obj.sender_type == ConversationHistory.CHARACTER else "Użytkownik"
+        return "Character" if obj.sender_type == ConversationHistory.CHARACTER else "User"

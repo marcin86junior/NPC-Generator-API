@@ -1,0 +1,41 @@
+<!-- templates/conversation.html -->
+{% extends 'npc_api/base.html' %}
+
+{% block content %}
+<div class="container">
+    <p class="lead mb-4">Select a character to talk with:</p>
+
+    <div class="row">
+        {% for character in characters %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h4>{{ character.name }}</h4>
+                    <div class="small">{{ character.profession }}</div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2"><strong>Frakcja:</strong> {{ character.faction }}</div>
+                    <div class="mb-2">
+                        <strong>Cechy:</strong>
+                        {% for trait in character.personality_traits %}
+                        <span class="badge bg-secondary me-1">{{ trait }}</span>
+                        {% endfor %}
+                    </div>
+                    <p class="card-text">{{ character.background|truncatechars:200 }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'conversation-history-html' character.id %}" class="btn btn-primary">Start
+                        conversation</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Brak dostępnych postaci do rozmowy. Dodaj nowe postacie, aby rozpocząć konwersację.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

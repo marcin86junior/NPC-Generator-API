@@ -21,6 +21,11 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-
+    # frontend views
+    path('', views.main_page, name='main'),
+    path('world/', views.world_page, name='world'),
+    path('characters/', views.characters_page, name='characters'),
+    path('conversation/', views.conversation_page, name='conversation'),
     path('conversations/<int:character_id>/history/', views.ConversationHistoryTemplateView.as_view(), name='conversation-history-html'),
+    path('about/', views.about_page, name='about'),
 ]

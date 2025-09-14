@@ -1,0 +1,55 @@
+<!-- templates/npc_api/main.html -->
+{% extends 'npc_api/base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">NPC Generator API</h1>
+    <p class="lead">NPC character generation system based on Gemini AI</p>
+    <hr class="my-4">
+    <div class="mt-4">
+        <a class="btn btn-info" href="http://127.0.0.1:8000/swagger/" target="_blank">Link to API Documentation (Swagger)</a>
+    </div>
+</div>
+
+<div class="alert alert-info mt-3">
+    <h5>Quick Start for World Creators:</h5>
+    <p>Use the endpoint <code>POST /stories/</code> to create a new fantasy world with the following parameters:</p>
+    <pre class="bg-light p-3">
+{
+  "title": "The Chronicles of the Sundered Realm",
+  "content": "data from fantasy.md file in json format",
+}
+        </pre>
+    <p>Once the world is created, you can generate NPC characters.</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Game World</h5>
+                <p class="card-text">Discover rich stories and character backgrounds in the game world.</p>
+                <a href="{% url 'world' %}" class="btn btn-outline-primary">More</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Characters</h5>
+                <p class="card-text">Browse and interact with generated NPC characters.</p>
+                <a href="{% url 'characters' %}" class="btn btn-outline-primary">View characters</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Conversations</h5>
+                <p class="card-text">Chat with characters and observe their reactions based on their personalities.</p>
+                <a href="{% url 'conversation' %}" class="btn btn-outline-primary">Start chat</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'npc_api/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Game Worlds</h1>
+    <p class="lead mb-4">Explore the worlds and learn about their stories</p>
+
+    <div class="row">
+        {% for story in stories %}
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ story.name }}</h3>
+                    <span class="badge bg-secondary">ID: {{ story.id }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>World Description</h5>
+                            <p>{{ story.title }}</p>
+                            <p>{{ story.content|truncatewords:130 }}</p>
+                            <p><small class="text-muted">Created: {{ story.uploaded_at|date:"F d, Y" }}</small></p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-header">Ask about this world</div>
+                                <div class="card-body">
+                                    <form method="post" action="{% url 'ask-question' story.id %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <textarea name="question" class="form-control" rows="3" placeholder="What would you like to know about this world?" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit Question</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+<!--                    {% if story.id == active_story_id %}-->
+<!--                    <div class="mt-4">-->
+<!--                        <div class="card border-info">-->
+<!--                            <div class="card-header bg-info text-white">Response to your question</div>-->
+<!--                            <div class="card-body">-->
+<!--                                <p><strong>Question:</strong> {{ question }}</p>-->
+<!--                                <hr>-->
+<!--                                <p><strong>Answer:</strong> {{ answer }}</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No worlds available. Create new worlds to start your adventure.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

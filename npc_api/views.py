@@ -19,6 +19,11 @@ from .services.character_conversation import CharacterConversation
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+from django.shortcuts import render
+
 
 class StoryViewSet(viewsets.ModelViewSet):
     queryset = Story.objects.all()
@@ -196,7 +201,6 @@ class CharacterTalkView(APIView):
 class ConversationHistoryViewSet(viewsets.ModelViewSet):
     queryset = ConversationHistory.objects.all().order_by('-timestamp')
     serializer_class = ConversationHistorySerializer
-    # permission_classes = [IsAuthenticated]  # odkomentuj jeśli potrzebujesz autentykacji
     filterset_fields = ['character', 'sender_type']
     search_fields = ['message']
 
@@ -206,10 +210,6 @@ class ConversationHistoryViewSet(viewsets.ModelViewSet):
         if character_id:
             queryset = queryset.filter(character_id=character_id)
         return queryset
-
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
 
 
 class ConversationHistoryTemplateView(TemplateView):
@@ -222,11 +222,29 @@ class ConversationHistoryTemplateView(TemplateView):
         character = get_object_or_404(Character, pk=character_id)
         conversations = ConversationHistory.objects.filter(character=character).order_by('timestamp')
 
-        # Dodaj paginację
         page = self.request.GET.get('page', 1)
-        paginator = Paginator(conversations, 20)  # 20 wiadomości na stronę
+        paginator = Paginator(conversations, 20)
         paginated_conversations = paginator.get_page(page)
 
         context['character'] = character
         context['conversations'] = paginated_conversations
         return context
+
+def main_page(request):
+    return render(request, 'npc_api/main.html')
+
+def world_page(request):
+    stories = Story.objects.all()
+    return render(request, 'npc_api/world.html', {'stories': stories})
+
+def characters_page(request):
+    characters = Character.objects.all()
+    return render(request, 'npc_api/characters.html', {'characters': characters})
+
+def conversation_page(request):
+    characters = Character.objects.all()
+    return render(request, 'npc_api/conversation.html', {'characters': characters})
+
+def about_page(request):
+    return render(request, 'npc_api/about.html')
+

@@ -2,11 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 
-router = DefaultRouter()
-router.register(r'stories', views.StoryViewSet)
-router.register(r'characters', views.CharacterViewSet)
-router.register(r'conversations', views.ConversationHistoryViewSet)
-
 urlpatterns = [
     path('', include(router.urls)),
     path('stories/<int:story_id>/ask-question/', views.StoryAskQuestionView.as_view(), name='ask-question'),

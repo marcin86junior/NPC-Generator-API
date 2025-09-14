@@ -1,0 +1,81 @@
+{% extends 'npc_api/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Generate New Character</h2>
+    <p class="lead">Create a new NPC character for your fantasy world</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="generateCharacterForm">
+                <div class="mb-3">
+                    <label for="storyId" class="form-label">Story ID</label>
+                    <input type="text" class="form-control" id="storyId" required>
+                    <div class="form-text">Enter the ID of the world where this character exists</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="characterRequest" class="form-label">Character Description</label>
+                    <textarea class="form-control" id="characterRequest" rows="4" maxlength="300" required></textarea>
+                    <div class="form-text">Describe the character you want to generate (max 300 characters)</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Generate Character</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4" id="result" style="display: none;">
+        <div class="card">
+            <div class="card-header">Generated Character</div>
+            <div class="card-body">
+                <div id="characterData"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('generateCharacterForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const storyId = document.getElementById('storyId').value;
+    const request = document.getElementById('characterRequest').value;
+
+    fetch(`/characters/${storyId}/generate-character/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            request: request
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('characterData').innerHTML = JSON.stringify(data, null, 2);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while generating the character.');
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
