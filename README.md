@@ -144,7 +144,7 @@ We shold get a response like:
 }
 ```
 
-### My added endpoints:
+### Conversation with NPC
 
 1. Create good and bad personality (helpful and evil)
 - "Create a personality that is good, fair and honest."
@@ -207,14 +207,27 @@ answer:
 }
 ```
 
+### Conversation with NPC by prompter: 
+- http://127.0.0.1:8000/conversations/1/history/
+- you can change character id in url
+
+<p align="center">
+  <img src="promter.png" alt="Interfejs promptera do rozmowy z NPC" width="600">
+  <br>
+  <em>Prompter interface for conversation with game characters</em>
+</p>
+
 ### TODO
-1. Add tests for new endpoints
-2. Add conversations model do db /conversations/{id_character}
-3. Save conversation history 
-4. Use conversation history in CharacterConversation
+1. Add conversations model to db OK
+2. Save conversation history of me and person I'm talking to OK
+3. Create prompter to talk with characters OK
+4. Use conversation history in CharacterConversation (last 10 messages) TODO
+5. Add tests for new endpoints TODO
 
 ### My notes
 1. Gemini AI sometimes returns "Model is overloaded" error.
 2. I just send 2-3 requests and it works. It's hard to say if it's my code or Gemini issue.
-3. I added story model to handle multiple stories in db. If game is on begin it should use fantasy-begin.md story.
-4. Later, when game progress we can change story to fantasy-middle.md or fantasy-end.md
+3. I added "story" model to handle multiple stories in db. 
+4. If the game is at the beginning it should use fantasy-begin.md story.
+5. Later, when the game progresses we can change story to fantasy-middle.md or fantasy-end.md
+6. People from different areas, for example "Deepwoods", should have limited knowledge about other areas like "Ironhold Clans".

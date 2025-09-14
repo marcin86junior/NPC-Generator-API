@@ -1,5 +1,6 @@
 import os
 import google.generativeai as genai
+from npc_api.models import ConversationHistory  # dodajemy import modelu
 
 
 class CharacterConversation:
@@ -56,12 +57,38 @@ class CharacterConversation:
 
         return good_count >= bad_count
 
-    def generate_response(self, message):
+    def save_conversation(self, user_message, character_response):
+        """
+        Zapisuje wymianę wiadomości do bazy danych.
+
+        Args:
+            user_message: Wiadomość od użytkownika
+            character_response: Odpowiedź postaci
+        """
+        if not self.character:
+            return
+
+        # Zapisz wiadomość użytkownika
+        ConversationHistory.objects.create(
+            character=self.character,
+            message=user_message,
+            sender_type=ConversationHistory.USER
+        )
+
+        # Zapisz odpowiedź postaci
+        ConversationHistory.objects.create(
+            character=self.character,
+            message=character_response,
+            sender_type=ConversationHistory.CHARACTER
+        )
+
+    def generate_response(self, message, save_history=True):
         """
         Generates a character's response to the user's message.
 
         Args:
             message: Message from the user
+            save_history: Whether to save conversation to database
 
         Returns:
             str: Generated character response
@@ -88,7 +115,12 @@ class CharacterConversation:
 
             model = genai.GenerativeModel(self.model)
             response = model.generate_content(prompt)
+            response_text = response.text
 
-            return response.text
+            # Zapisz konwersację do bazy danych
+            if save_history and self.character:
+                self.save_conversation(message, response_text)
+
+            return response_text
         except Exception as e:
             return f"Error while generating response: {str(e)}"

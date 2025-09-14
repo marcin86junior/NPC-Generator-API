@@ -2,13 +2,15 @@ from rest_framework import viewsets, status, views
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Story, Character
+from .models import Story, Character, ConversationHistory
 from .serializers import (
     StorySerializer,
     CharacterSerializer,
     StoryQuestionSerializer,
     CharacterRequestSerializer,
-    CharacterTalkSerializer
+    CharacterTalkSerializer,
+    ConversationHistorySerializer,
+
 )
 from .services.story_understanding import StoryUnderstanding
 from .services.character_generator import CharacterGenerator
@@ -189,3 +191,42 @@ class CharacterTalkView(APIView):
                 )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConversationHistoryViewSet(viewsets.ModelViewSet):
+    queryset = ConversationHistory.objects.all().order_by('-timestamp')
+    serializer_class = ConversationHistorySerializer
+    # permission_classes = [IsAuthenticated]  # odkomentuj jeśli potrzebujesz autentykacji
+    filterset_fields = ['character', 'sender_type']
+    search_fields = ['message']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        character_id = self.request.query_params.get('character_id')
+        if character_id:
+            queryset = queryset.filter(character_id=character_id)
+        return queryset
+
+from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+
+
+class ConversationHistoryTemplateView(TemplateView):
+    template_name = "npc_api/conversation_history.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        character_id = self.kwargs.get('character_id')
+
+        character = get_object_or_404(Character, pk=character_id)
+        conversations = ConversationHistory.objects.filter(character=character).order_by('timestamp')
+
+        # Dodaj paginację
+        page = self.request.GET.get('page', 1)
+        paginator = Paginator(conversations, 20)  # 20 wiadomości na stronę
+        paginated_conversations = paginator.get_page(page)
+
+        context['character'] = character
+        context['conversations'] = paginated_conversations
+        return context

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Story, Character
+from .models import Story, Character, ConversationHistory
 
 
 class StorySerializer(serializers.ModelSerializer):
@@ -28,3 +28,19 @@ class CharacterTalkSerializer(serializers.Serializer):
         required=True,
         help_text="Message to the character"
     )
+
+
+class ConversationHistorySerializer(serializers.ModelSerializer):
+    character_name = serializers.SerializerMethodField()
+    sender = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ConversationHistory
+        fields = ['id', 'character', 'character_name', 'message', 'sender_type', 'sender', 'timestamp']
+        read_only_fields = ['timestamp']
+
+    def get_character_name(self, obj):
+        return obj.character.name if obj.character else None
+
+    def get_sender(self, obj):
+        return "Postać" if obj.sender_type == ConversationHistory.CHARACTER else "Użytkownik"
