@@ -18,6 +18,7 @@ django-filter==23.5
 
 # OpenAI
 google-genai
+google.generativeai
 
 # Miscellaneous
 python-dotenv==1.0.1

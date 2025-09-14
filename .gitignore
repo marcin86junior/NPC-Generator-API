@@ -6,8 +6,8 @@ venv/
 .venv/
 data/db.sqlite3
 
-.db/
-db/
+.db/db.sqlite3
+db/db.sqlite3
 
 # Django static files
 /static/
